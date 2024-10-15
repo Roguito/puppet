@@ -8,7 +8,7 @@ spec:
         generators:
           - list:
               elements:
-                - repoURL: https://github.com/siderolabs/contrib.git
+                - repoURL: https://github.com/Roguito/puppet.git
                   revision: HEAD
                   repoPath: examples/omni/apps/*/*
           - git:
