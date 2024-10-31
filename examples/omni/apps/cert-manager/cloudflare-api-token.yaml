@@ -1,0 +1,12 @@
+apiVersion: bitnami.com/v1
+kind: Secret
+metadata:
+  name: cloudflare-api-token
+  namespace: cert-manager
+spec:
+  encryptedData:
+    api-token: 9hi6cPX9KUBkGKSk8_tH5kX0LdPfGb5-qBzR4ewL
+  template:
+    metadata:
+      name: cloudflare-api-token
+      namespace: cert-manager

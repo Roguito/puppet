@@ -1,0 +1,69 @@
+cluster:
+  name: puppet
+  id: 1
+
+k8sServiceHost: "192.168.2.116"
+k8sServicePort: "7445"
+
+kubeProxyReplacement: true
+
+operator:
+  #  # Can't have more replicas than nodes
+  replicas: 1
+  rollOutPods: true
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+
+# Roll out cilium agent pods automatically when ConfigMap is updated.
+rollOutCiliumPods: true
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 512Mi
+
+#debug:
+#  enabled: true
+
+# Increase rate limit when doing L2 announcements
+k8sClientRateLimit:
+  qps: 20
+  burst: 100
+
+l2announcements:
+  enabled: true
+
+externalIPs:
+  enabled: true
+
+enableCiliumEndpointSlice: true
+
+gatewayAPI:
+  enabled: true
+
+hubble:
+  enabled: true
+  relay:
+    enabled: true
+    rollOutPods: true
+  ui:
+    enabled: true
+    rollOutPods: true
+
+ingressController:
+  enabled: false
+  default: false
+  loadbalancerMode: dedicated
+  service:
+    annotations:
+      io.cilium/lb-ipam-ips: 192.168.2.205
+    # Random values so Argo CD doesn't complain about the service being out of sync
+    insecureNodePort: 32434
+    secureNodePort: 31247
