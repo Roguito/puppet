@@ -12,28 +12,28 @@ spec:
                   revision: HEAD
                   repoPath: examples/omni/apps/*/*
           - git:
-              repoURL: '{{ repoURL }}'
-              revision: '{{ revision }}'
+              repoURL: "{{ repoURL }}"
+              revision: "{{ revision }}"
               directories:
-                - path: '{{ repoPath }}'
+                - path: "{{ repoPath }}"
   syncPolicy:
     preserveResourcesOnDeletion: true
   template:
     metadata:
-      name: '{{ path[3] }}-{{ path.basenameNormalized }}'
+      name: "{{ path[3] }}-{{ path.basenameNormalized }}"
       namespace: argocd
     spec:
       project: default
       source:
-        repoURL: '{{ repoURL }}'
-        targetRevision: '{{ revision }}'
-        path: '{{ path }}'
+        repoURL: "{{ repoURL }}"
+        targetRevision: "{{ revision }}"
+        path: "{{ path }}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: '{{ path[3] }}'
+        namespace: "{{ path[3] }}"
       syncPolicy:
         automated:
-          prune: false
+          prune: true
         syncOptions:
           - CreateNamespace=true
           - ServerSideApply=true
