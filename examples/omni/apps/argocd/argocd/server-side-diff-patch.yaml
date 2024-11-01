@@ -1,0 +1,7 @@
+[
+  {
+    "op": "add",
+    "path": "/data/controller.diff.server.side",
+    "value": "true"
+  }
+]
