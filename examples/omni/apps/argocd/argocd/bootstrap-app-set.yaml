@@ -16,18 +16,16 @@ spec:
               revision: "{{ revision }}"
               directories:
                 - path: "{{ repoPath }}"
-  syncPolicy:
-    preserveResourcesOnDeletion: true
   template:
     metadata:
-      name: "{{ path[3] }}-{{ path.basenameNormalized }}"
+      name: "{{ path[3] }}-app" # Optional: adjust naming convention if needed
       namespace: argocd
     spec:
       project: default
       source:
         repoURL: "{{ repoURL }}"
         targetRevision: "{{ revision }}"
-        path: "{{ path }}"
+        path: "{{ path }}" # This should point to the directory where your application manifests are
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{ path[3] }}"
