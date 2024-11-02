@@ -18,7 +18,7 @@ spec:
                 - path: "{{ repoPath }}"
   template:
     metadata:
-      name: "{{ path[3] }}-app" # Optional: adjust naming convention if needed
+      name: "{{ repoPath | splitList '/' | last }}-{{ path[3] }}-app"
       namespace: argocd
     spec:
       project: default
