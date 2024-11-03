@@ -2,41 +2,39 @@ apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: bootstrap
+  namespace: argocd
 spec:
   generators:
-    - matrix:
-        generators:
-          - list:
-              elements:
-                # Specify each application's repoURL and path explicitly
-                - repoURL: https://github.com/Roguito/puppet.git
-                  revision: HEAD
-                  repoPath: examples/omni/apps/argocd/argocd
-                - repoURL: https://github.com/Roguito/puppet.git
-                  revision: HEAD
-                  repoPath: examples/omni/apps/certmanager
-                - repoURL: https://github.com/Roguito/puppet.git
-                  revision: HEAD
-                  repoPath: examples/omni/apps/cilium
-                - repoURL: https://github.com/Roguito/puppet.git
-                  revision: HEAD
-                  repoPath: examples/omni/apps/gateway
-                - repoURL: https://github.com/Roguito/puppet.git
-                  revision: HEAD
-                  repoPath: examples/omni/apps/monitoring/kube-prometheus-stack
+    - list:
+        elements:
+          - repoURL: https://github.com/Roguito/puppet.git
+            revision: HEAD
+            path: examples/omni/apps/argocd/argocd
+          - repoURL: https://github.com/Roguito/puppet.git
+            revision: HEAD
+            path: examples/omni/apps/certmanager
+          - repoURL: https://github.com/Roguito/puppet.git
+            revision: HEAD
+            path: examples/omni/apps/cilium
+          - repoURL: https://github.com/Roguito/puppet.git
+            revision: HEAD
+            path: examples/omni/apps/gateway
+          - repoURL: https://github.com/Roguito/puppet.git
+            revision: HEAD
+            path: examples/omni/apps/monitoring/kube-prometheus-stack
   template:
     metadata:
-      name: "{{ repoPath | splitList '/' | last | lower | replace '_' '-' | regexReplaceAll '[^a-z0-9-]' '-' | trim | regexReplaceAll '^-|-$' '' }}-argocd-app"
+      name: "{{ path | splitList '/' | last | lower | replace '_' '-' | regexReplaceAll '[^a-z0-9-]' '-' | trim | regexReplaceAll '^-|-$' '' }}-argocd-app"
       namespace: argocd
     spec:
       project: default
       source:
         repoURL: "{{ repoURL }}"
         targetRevision: "{{ revision }}"
-        path: "{{ repoPath }}" # This points to the directory where your application manifests are
+        path: "{{ path }}"
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ path | splitList '/' | nth 3 }}" # Assumes the fourth segment is the namespace
+        namespace: "{{ path | splitList '/' | nth 3 }}" # Adjust based on your namespace structure
       syncPolicy:
         automated:
           prune: true
@@ -46,31 +44,12 @@ spec:
           - ApplyOutOfSyncOnly=true
           - RespectIgnoreDifferences=true
           - SkipDryRunOnMissingResource=true
-        retry:
-          limit: -1 # Infinite retries
-          backoff:
-            duration: 30s
-            factor: 2
-            maxDuration: 5m
       ignoreDifferences:
-        # Add your specific ignores here
+        # Add specific ignores if needed
         - name: cilium-ca
           kind: Secret
           namespace: kube-system
           jsonPointers:
             - /data/ca.crt
             - /data/ca.key
-        - name: hubble-server-certs
-          kind: Secret
-          namespace: kube-system
-          jsonPointers:
-            - /data/ca.crt
-            - /data/tls.crt
-            - /data/tls.key
-        - name: hubble-relay-client-certs
-          kind: Secret
-          namespace: kube-system
-          jsonPointers:
-            - /data/ca.crt
-            - /data/tls.crt
-            - /data/tls.key
+        # Other ignore differences here...
