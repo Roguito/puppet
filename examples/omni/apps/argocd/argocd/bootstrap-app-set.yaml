@@ -8,27 +8,35 @@ spec:
         generators:
           - list:
               elements:
+                # Specify each application's repoURL and path explicitly
                 - repoURL: https://github.com/Roguito/puppet.git
                   revision: HEAD
-                  repoPath: examples/omni/apps/*/*
-          - git:
-              repoURL: "{{ repoURL }}"
-              revision: "{{ revision }}"
-              directories:
-                - path: "{{ repoPath }}"
+                  repoPath: examples/omni/apps/argocd/argocd
+                - repoURL: https://github.com/Roguito/puppet.git
+                  revision: HEAD
+                  repoPath: examples/omni/apps/certmanager
+                - repoURL: https://github.com/Roguito/puppet.git
+                  revision: HEAD
+                  repoPath: examples/omni/apps/cilium
+                - repoURL: https://github.com/Roguito/puppet.git
+                  revision: HEAD
+                  repoPath: examples/omni/apps/gateway
+                - repoURL: https://github.com/Roguito/puppet.git
+                  revision: HEAD
+                  repoPath: examples/omni/apps/monitoring/kube-prometheus-stack
   template:
     metadata:
-      name: "{{ repoPath | splitList '/' | last | lower | replace '_' '-' | regexReplaceAll '[^a-z0-9-]' '-' }}-argocd-app"
+      name: "{{ repoPath | splitList '/' | last | lower | replace '_' '-' | regexReplaceAll '[^a-z0-9-]' '-' | trim | regexReplaceAll '^-|-$' '' }}-argocd-app"
       namespace: argocd
     spec:
       project: default
       source:
         repoURL: "{{ repoURL }}"
         targetRevision: "{{ revision }}"
-        path: "{{ path }}" # This should point to the directory where your application manifests are
+        path: "{{ repoPath }}" # This points to the directory where your application manifests are
       destination:
         server: https://kubernetes.default.svc
-        namespace: "{{ path[3] }}"
+        namespace: "{{ path | splitList '/' | nth 3 }}" # Assumes the fourth segment is the namespace
       syncPolicy:
         automated:
           prune: true
@@ -45,7 +53,7 @@ spec:
             factor: 2
             maxDuration: 5m
       ignoreDifferences:
-        # Cilium generated certs
+        # Add your specific ignores here
         - name: cilium-ca
           kind: Secret
           namespace: kube-system
