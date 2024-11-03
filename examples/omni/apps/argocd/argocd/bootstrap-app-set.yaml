@@ -18,7 +18,7 @@ spec:
                 - path: "{{ repoPath }}"
   template:
     metadata:
-      name: "{{ repoPath | splitList '/' | last | lower | replace '_' '-' }}-argocd-app"
+      name: "{{ repoPath | splitList '/' | last | lower | replace '_' '-' | regexReplaceAll '[^a-z0-9-]' '-' }}-argocd-app"
       namespace: argocd
     spec:
       project: default
